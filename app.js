@@ -10,6 +10,7 @@ const fs = require('fs'); // Sistema de archivos
 const mongoose = require('mongoose'); // ORM para MongoDB
 const app = express(); // Inicializa la aplicación Express
 const PORT = 3000; // Puerto en el que se ejecutará el servidor
+const Activity = require('./models/Activity');
 const multer = require('multer');
 const User = require('./models/user')
 const MongoStore = require('connect-mongo');
@@ -145,7 +146,7 @@ const updateActivity = async (req, res, next) => {
 };
 
 // En el controlador
-const Activity = require('./models/Activity');
+
 
 
 // ==========================================
@@ -160,18 +161,13 @@ app.use((req, res, next) => {
 
 //middleware para cookies
 app.use(session({
-  secret:  process.env.SESSION_SECRET,
-  resave: false, //evita que la sesion de guarde soi hay alguna modificacion en la propia sesion
-  saveUninitialized: false, // no crea sesion hasta que haya algo que guardar
-  rolling:true, //renueva la cookie en cada solicitud
+  secret: require('crypto').randomBytes(64).toString('hex'),
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
   cookie: {
-    maxAge: 1000 * 60 * 30,
-    secure: process.env.NODE_ENV === 'production'
-  },
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    ttl: 60 * 30 // Tiempo de vida de la sesión (30 minutos)
-  })
+    maxAge: 1000*60*30
+  }
 }));
 
 // inicializamos passport, session y flash
@@ -301,15 +297,17 @@ app.post('/sign-up', upload.single('profilePic'), async (req, res) => {
   }
 });
 
+
 app.get('/login',(req, res) => {
   res.render('login', { title: 'Iniciar sesion' }); // Ruta para iniciar sesion
 })
+
 app.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
   failureFlash: true
 }), async (req, res) => {
-  req.session.userId = req.user._id; // Guarda el ID del usuario en la sesión
-  await updateActivity(req, res, () => {}); // Actualiza la actividad inmediatamente
+  req.session.userId = req.user._id;
+  await updateActivity(req, res, () => {});
   res.redirect('/basededatos');
 });
 
@@ -582,9 +580,7 @@ app.use((req, res) => {
   res.status(404).render('404', { title: 'Página no encontrada' }); // Middleware para manejar errores 404 (Página no encontrada)
 });
 const bodyParser = require('body-parser');
-// Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+
 
 
 
