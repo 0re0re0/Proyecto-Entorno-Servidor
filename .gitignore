@@ -1,0 +1,34 @@
+# environment variables
+.env
+.env.production
+.env.backup
+.env.*.backup
+
+# dependencies
+node_modules/
+
+# Logs
+*.log
+access.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Upload directory
+uploads/*
+!uploads/.gitkeep
+access.log
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*

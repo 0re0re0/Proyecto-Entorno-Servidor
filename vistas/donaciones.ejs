@@ -1,0 +1,76 @@
+<%- include('./partials/head.ejs') %>
+
+    <body>
+        <%- include('./partials/navegar.ejs') %>
+            <div class="main-container">
+                <div class="donations-header">
+                    <h1>Donaciones</h1>
+                </div>
+
+                <div class="donations-grid">
+                    <% if (productos && productos.length> 0) { %>
+                        <% productos.forEach(producto=> { %>
+                            <div class="donation-card">
+                                <% if (producto.imagenUrl) { %>
+                                    <div class="donation-image">
+                                        <img src="<%= producto.imagenUrl %>" alt="<%= producto.nombre %>">
+                                    </div>
+                                    <% } %>
+                                        <div class="donation-content">
+                                            <h2>
+                                                <%= producto.nombre %>
+                                            </h2>
+                                            <p class="donation-description">
+                                                <%= producto.descripcion %>
+                                            </p>
+                                            <div class="donation-price">
+                                                <span>€<%= producto.precio.toFixed(2) %></span>
+                                            </div>
+                                            <div class="donation-actions">
+                                                <div id="paypal-button-<%= producto._id %>"></div>
+                                            </div>
+                                        </div>
+                            </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <p class="no-donations">No hay donaciones disponibles.</p>
+                                    <% } %>
+                </div>
+            </div>
+
+            <!-- PayPal Script -->
+            <script
+                src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID %>&currency=EUR&disable-funding=card"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+        <% productos.forEach(producto => { %>
+                    paypal.Buttons({
+                        createOrder: function (data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        value: '<%= producto.precio.toFixed(2) %>'
+                                    }
+                                }]
+                            });
+                        },
+                        onApprove: function (data, actions) {
+                            return actions.order.capture().then(function (details) {
+                                alert('Transacción completada por ' + details.payer.name.given_name);
+                                window.location.href = "/success?token=" + data.orderID;
+                            });
+                        },
+                        style: {
+                            layout: 'vertical',
+                            color: 'blue',
+                            shape: 'rect',
+                            label: 'paypal'
+                        }
+                    }).render('#paypal-button-<%= producto._id %>');
+        <% }); %>
+    });
+            </script>
+            <%- include('./partials/footer.ejs') %>
+    </body>
+
+    </html>

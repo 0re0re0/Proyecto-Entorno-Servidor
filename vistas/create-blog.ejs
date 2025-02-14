@@ -1,0 +1,39 @@
+<%- include('./partials/head.ejs') %>
+
+    <body>
+        <%- include('./partials/navegar.ejs') %>
+            <div class="main-container">
+                <div class="blog-form-container">
+                    <h1>
+                        <%= title %>
+                    </h1>
+                    <form action="<%= blog ? `/edit-blog/${blog._id}` : '/create-blog' %>" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="title">Título</label>
+                            <input type="text" id="title" name="title" value="<%= blog ? blog.title : '' %>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="summary">Resumen</label>
+                            <textarea id="summary" name="summary" required><%= blog ? blog.summary : '' %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="content">Contenido</label>
+                            <textarea id="content" name="content" required><%= blog ? blog.content : '' %></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image">Imagen</label>
+                            <input type="file" id="image" name="image" accept="image/*">
+                        </div>
+
+                        <button type="submit" class="btn primary">
+                            <%= blog ? 'Actualizar' : 'Crear' %> Blog
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <%- include('./partials/footer.ejs') %>
+    </body>
